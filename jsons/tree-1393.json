@@ -1,0 +1,20 @@
+{
+  "description": "TREE721-1393",
+  "external_url": "https://www.yournftree.com/",
+  "image": "https://raw.githubusercontent.com/nftree721/nftree721.github.io/main/trees/tree-1393.svg",
+  "name": "Tree-721-1393",
+  "attributes": [
+    {
+      "trait_type": "SHA-256",
+      "value": "8e7os505nArcf/1Oy7Y0TWkUVis4w0GOh9zlIsOa5hA="
+    },
+    {
+      "trait_type": "Tree",
+      "value": "Auto-Generated"
+    },
+    {
+      "trait_type": "Format",
+      "value": "SVG"
+    }
+  ]
+}

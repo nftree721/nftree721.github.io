@@ -1,0 +1,20 @@
+{
+  "description": "TREE721-3048",
+  "external_url": "https://www.yournftree.com/",
+  "image": "https://raw.githubusercontent.com/nftree721/nftree721.github.io/main/trees/tree-3048.svg",
+  "name": "Tree-721-3048",
+  "attributes": [
+    {
+      "trait_type": "SHA-256",
+      "value": "wmOjeFJa5A0rbGmCUn3U+deKgOgYg+rjubQcHQLHIsA="
+    },
+    {
+      "trait_type": "Tree",
+      "value": "Auto-Generated"
+    },
+    {
+      "trait_type": "Format",
+      "value": "SVG"
+    }
+  ]
+}
