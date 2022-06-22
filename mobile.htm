@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>On-Chain NFT Trees - Ethereum - ERC-721</title>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0E3L7K1EQ4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-0E3L7K1EQ4');
+    </script>
+</head>
+
+<body>
+    <h1>On-Chain NFT Trees</h1>
+
+    <h2>Connect your Metamask</h2>
+    <button class="getAccountButton">Connect!</button> <label id="selectedAccount"></label>
+
+    <h2>Undig my tree</h2>
+    Enter a value between 0 and 9999: <input type="text" id="treeindex" size="5" name="fname">
+    <button onclick="displayTree()">Undig my tree</button>
+    <br />
+    <div id="selected-tree"></div>
+
+    <h2>Buy now</h2>
+    <p><span id="mmi_detected"></span></p>
+    <button class="currentIndexButton">Click for current index & price: </button> <label id="currentIndexLabel"></label>
+    <br /><br />
+    <button class="buyYourTreeButton">Buy your tree!</button>
+    <br /><br />
+    Once bought, check Metamask for the transaction on chain, then head to <a href="https://opensea.io/" target="out">OpenSea</a>!
+
+    <script>
+        const contract_address = '0x126c074e6c5e36d9ae22a9acb68014236c126b3d';
+
+        const abi = [
+            {
+                "inputs": [],
+                "name": "purchase_tree",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "index",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "get_tree",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "svg",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "counter",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const getCurrentIndexButton = document.querySelector('.currentIndexButton');
+        getCurrentIndexButton.addEventListener('click', () => {
+            getIndex();
+        });
+
+        async function getIndex() {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contract_address, abi, signer);
+            const current_index = await contract.counter();
+            const cost = (current_index + 1) / 20000;
+            document.getElementById('currentIndexLabel').innerHTML = current_index + " (" + cost + " ETH to buy that tree + network fees)";
+        }
+
+        const detectMetamask = async () => {
+            console.log("Detecting MM");
+            if (typeof window.ethereum !== 'undefined') {
+            } else {
+                document.getElementById("mmi_detected").innerText = "Please install the Metamask plugin";
+            }
+        }
+
+        detectMetamask();
+
+        const getETHAccountButton = document.querySelector('.getAccountButton');
+        getETHAccountButton.addEventListener('click', () => {
+            getETHAccount();
+        });
+
+        async function getETHAccount() {
+            accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            console.log("Selected account: ", accounts[0]);
+            document.getElementById('selectedAccount').innerHTML = accounts[0];
+        }
+
+        window.ethereum.on('chainChanged', (_chainId) => {
+            window.location.reload();
+        });
+
+        const buyYourTreeButton = document.querySelector('.buyYourTreeButton');
+        buyYourTreeButton.addEventListener('click', () => {
+            async function buyTree() {
+                const amount = '0x16345785D8A0000';
+                const sender = accounts[0];
+
+                console.log("from", sender, "contract_address", contract_address, "for", amount);
+
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                const contract = new ethers.Contract(contract_address, abi, signer);
+
+                const current_index = await contract.counter();
+                const eth_cost = ((current_index + 1) / 20000).toString();
+                console.log("eth_cost", eth_cost);
+
+                const options = { value: ethers.utils.parseEther(eth_cost) }
+                const tree_index = await contract.purchase_tree(options);
+                console.log("tree_index", tree_index);
+            };
+
+            buyTree();
+        });
+
+        async function _displayTree(index) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contract_address, abi, signer);
+            const tree_as_svg = await contract.get_tree(index);
+            console.log("tree_as_svg", tree_as_svg);
+
+            var container = document.getElementById("selected-tree");
+            container.innerHTML = tree_as_svg;
+        };
+
+        function displayTree() {
+            var index = document.getElementById("treeindex").value;
+            console.log("displayTree", index);
+            _displayTree(index);
+        }
+    </script>
+
+</body>
+
+</html>
