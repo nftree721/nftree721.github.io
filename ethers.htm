@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<style>
+    body {
+        background-image: url('bg.jpg');
+    }
+</style>
+
+<head>
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GLM9JLJ57W"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-GLM9JLJ57W');
+	</script>
+
+    <meta charset="UTF-8">
+    <title>On-Chain NFT Trees - Ethereum - ERC-721</title>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script>
+        async function _displayTree(index) {
+           const provider = new ethers.providers.Web3Provider(window.ethereum);
+           const signer = provider.getSigner();
+           const contract = new ethers.Contract(contract_address, abi, signer);
+           const tree_as_svg = await contract.get_tree(index);
+           console.log("tree_as_svg", tree_as_svg);
+   
+           var container = document.getElementById("selected-tree");
+           container.innerHTML = tree_as_svg;
+        };
+   
+        function displayTree() {
+           var index = 777;
+           console.log("displayTree", index);
+           _displayTree(index);
+        }
+   </script>
+
+    <h1>ETHERS LIBS TEST</h1>
+
+    <button onclick="displayTree()">Undig my tree</button>
+</body>
