@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>On-Chain NFT Trees - Ethereum - ERC-721</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>NFTrees Mobile — 100% On-Chain Generative Trees (ERC-721)</title>
+    <meta name="description" content="Mobile mint station and tree explorer for 100% on-chain NFTrees on Ethereum.">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0E3L7K1EQ4"></script>
@@ -12,164 +13,698 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-0E3L7K1EQ4');
     </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #070c0a;
+            --bg-card: rgba(14, 25, 20, 0.85);
+            --border-color: rgba(52, 211, 153, 0.2);
+            --primary: #10b981;
+            --primary-light: #6ee7b7;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --text-main: #f0fdf4;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            padding: 16px 14px 40px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* Header Bar */
+        .mobile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .brand-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .desktop-link {
+            font-size: 0.8rem;
+            color: var(--primary-light);
+            text-decoration: none;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Banner */
+        .intro-banner {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .intro-banner h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.85rem;
+            line-height: 1.2;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .intro-banner p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px 16px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        .card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Stats Pill Row */
+        .stat-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: center;
+        }
+
+        .stat-box .lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-box .val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 18px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-sm {
+            min-height: 36px;
+            width: auto;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        /* Wallet Box */
+        .wallet-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        #selectedAccount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--primary-light);
+            word-break: break-all;
+        }
+
+        #mmi_detected {
+            font-size: 0.78rem;
+            color: #fbbf24;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Undig Controls */
+        .undig-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .input-number {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: #ffffff;
+            outline: none;
+            width: 100%;
+        }
+
+        .input-number:focus {
+            border-color: var(--primary);
+        }
+
+        .chip-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            scrollbar-width: none;
+        }
+
+        .chip-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .chip.active, .chip:active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        /* Tree Display Frame */
+        #selected-tree {
+            background: #09120e;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            text-align: center;
+        }
+
+        #selected-tree svg, #selected-tree img {
+            width: 220px;
+            height: 220px;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+            background: #000;
+        }
+
+        .tree-meta-bar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 220px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        /* UNICEF & Info */
+        .info-pill {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+
+        .info-pill strong {
+            color: #93c5fd;
+        }
+
+        /* Footer */
+        .mobile-footer {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 24px;
+        }
+
+        .mobile-footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 440px;
+            margin: 0 auto;
+            background: #11221b;
+            border: 1px solid var(--primary);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 1000;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
 <body>
-    <h1>On-Chain NFT Trees For Mobile</h1>
 
-    <h2>Connect your Metamask</h2>
-    <button class="getAccountButton">Connect!</button> <label id="selectedAccount"></label>
+    <!-- Header -->
+    <header class="mobile-header">
+        <a href="./index.htm" class="brand">
+            <div class="brand-icon">🌿</div>
+            <div class="brand-title">NFTrees</div>
+        </a>
+        <a href="./index.htm" class="desktop-link">&#x1F5A5; Full Site</a>
+    </header>
 
-    <h2>Undig my tree</h2>
-    Enter a value between 0 and 9999: <input type="text" id="treeindex" size="5" name="fname">
-    <button onclick="displayTree()">Undig my tree</button>
-    <br />
-    <div id="selected-tree"></div>
+    <!-- Intro -->
+    <div class="intro-banner">
+        <h1>On-Chain NFT Trees</h1>
+        <p>100% EVM algorithmic trees &bull; 20% to UNICEF</p>
+    </div>
 
-    <h2>Buy now</h2>
-    <p><span id="mmi_detected"></span></p>
-    <button class="currentIndexButton">Click for current index & price: </button> <label id="currentIndexLabel"></label>
-    <br /><br />
-    <button class="buyYourTreeButton">Buy your tree!</button>
-    <br /><br />
-    Once bought, check Metamask for the transaction on chain, then head to <a href="https://opensea.io/" target="out">OpenSea</a>!
+    <!-- Quick Stats -->
+    <div class="stat-row">
+        <div class="stat-box">
+            <div class="lbl">Minted</div>
+            <div class="val" id="mintedVal">11 / 10k</div>
+        </div>
+        <div class="stat-box">
+            <div class="lbl">Next Price</div>
+            <div class="val" id="priceVal" style="color: var(--primary-light);">0.0006 ETH</div>
+        </div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <!-- Mint Station -->
+    <div class="card">
+        <h2>
+            <span>Mint Station</span>
+            <button class="btn btn-secondary btn-sm currentIndexButton">&#x21bb; Refresh</button>
+        </h2>
+
+        <!-- Wallet connection -->
+        <div class="wallet-box">
+            <div>
+                <span id="selectedAccount">Wallet: Not connected</span>
+                <span id="mmi_detected">Checking MetaMask...</span>
+            </div>
+            <button class="btn btn-secondary btn-sm getAccountButton">Connect</button>
+        </div>
+
+        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 14px;">
+            Target Tree: <strong id="currentIndexLabel" style="color: #ffffff;">Loading index...</strong>
+        </div>
+
+        <button class="btn btn-primary buyYourTreeButton" style="font-size: 1.05rem;">
+            Buy Your Tree!
+        </button>
+
+        <div style="font-size: 0.78rem; text-align: center; color: var(--text-muted); margin-top: 10px;">
+            Once bought, inspect on MetaMask or trade on <a href="https://opensea.io/" target="out" style="color: var(--primary-light);">OpenSea</a>.
+        </div>
+    </div>
+
+    <!-- Undig Explorer -->
+    <div class="card">
+        <h2>Undig Any Tree</h2>
+        <div class="undig-row">
+            <input type="number" id="treeindex" class="input-number" min="0" max="9999" placeholder="0 - 9999" value="0">
+            <button class="btn btn-primary btn-sm" onclick="displayTree()" style="width: auto; padding: 0 18px;">Undig</button>
+        </div>
+
+        <!-- Touch chips -->
+        <div class="chip-scroll">
+            <button class="chip active" onclick="quickSelect(0, this)">#0 Genesis</button>
+            <button class="chip" onclick="quickSelect(11, this)">#11 Next</button>
+            <button class="chip" onclick="quickSelect(42, this)">#42</button>
+            <button class="chip" onclick="quickSelect(777, this)">#777 Lucky</button>
+            <button class="chip" onclick="quickSelect(1337, this)">#1337</button>
+            <button class="chip" onclick="quickSelect(9999, this)">#9999 Final</button>
+        </div>
+
+        <div id="selected-tree">
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Select an index to preview on-chain SVG.</p>
+        </div>
+    </div>
+
+    <!-- UNICEF Impact -->
+    <div class="info-pill">
+        💙 <strong>20% to UNICEF:</strong> Every purchase automatically forwards 20% to verified address
+        <a href="https://etherscan.io/address/0xa59b29d7dbc9794d1e7f45123c48b2b8d0a34636" target="out" style="color: #93c5fd; word-break: break-all;">
+            uniceffrance.eth
+        </a>.
+    </div>
+
+    <!-- Footer -->
+    <footer class="mobile-footer">
+        <p>&copy; 2026 YourNFTree &bull; 100% On-Chain ERC-721</p>
+        <p style="margin-top: 6px;">
+            <a href="./index.htm">Desktop Gallery & Explainer</a> &bull;
+            <a href="https://etherscan.io/address/0xd5c8b72ce5f9b7d03d29f14b3802fcc1d4f06968" target="out">Contract</a> &bull;
+            <a href="https://opensea.io/" target="out">OpenSea</a>
+        </p>
+    </footer>
+
+    <!-- Mobile Toast -->
+    <div id="mobileToast" class="toast"></div>
+
+    <!-- Ethers v6 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
     <script>
         const contract_address = '0xd5c8b72ce5f9b7d03d29f14b3802fcc1d4f06968';
+        const PUBLIC_RPC = 'https://ethereum-rpc.publicnode.com';
 
         const abi = [
             {
                 "inputs": [],
                 "name": "purchase_tree",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
                 "stateMutability": "payable",
                 "type": "function"
             },
             {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "index",
-                        "type": "uint256"
-                    }
-                ],
+                "inputs": [{ "internalType": "uint256", "name": "index", "type": "uint256" }],
                 "name": "get_tree",
-                "outputs": [
-                    {
-                        "internalType": "string",
-                        "name": "svg",
-                        "type": "string"
-                    }
-                ],
+                "outputs": [{ "internalType": "string", "name": "svg", "type": "string" }],
                 "stateMutability": "pure",
                 "type": "function"
             },
             {
                 "inputs": [],
                 "name": "counter",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
                 "stateMutability": "view",
                 "type": "function"
             }
         ];
 
-        const getCurrentIndexButton = document.querySelector('.currentIndexButton');
-        getCurrentIndexButton.addEventListener('click', () => {
-            getIndex();
-        });
+        let selectedAccount = null;
+        let publicProvider = null;
+        let browserProvider = null;
 
-        async function getIndex() {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(contract_address, abi, signer);
-            const current_index = await contract.counter();
-            const cost = (current_index + 1) / 20000;
-            document.getElementById('currentIndexLabel').innerHTML = current_index + " (" + cost + " ETH to buy that tree + network fees)";
+        try {
+            publicProvider = new ethers.JsonRpcProvider(PUBLIC_RPC);
+        } catch (e) {
+            console.log("RPC init:", e);
         }
 
-        const detectMetamask = async () => {
-            console.log("Detecting MM");
-            if (typeof window.ethereum !== 'undefined') {
+        if (typeof window.ethereum !== 'undefined') {
+            browserProvider = new ethers.BrowserProvider(window.ethereum);
+            window.ethereum.on && window.ethereum.on('chainChanged', () => window.location.reload());
+            window.ethereum.on && window.ethereum.on('accountsChanged', (accs) => {
+                updateAccount(accs && accs[0] ? accs[0] : null);
+            });
+        }
+
+        function getActiveProvider() {
+            return browserProvider || publicProvider;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("mobileToast");
+            if (!toast) return;
+            toast.innerText = msg;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3500);
+        }
+
+        function updateAccount(acc) {
+            selectedAccount = acc;
+            const el = document.getElementById("selectedAccount");
+            if (acc) {
+                el.innerText = acc.slice(0, 6) + '...' + acc.slice(-4);
             } else {
-                document.getElementById("mmi_detected").innerText = "Please install the Metamask plugin";
+                el.innerText = "Wallet: Not connected";
             }
         }
 
-        detectMetamask();
-
-        const getETHAccountButton = document.querySelector('.getAccountButton');
-        getETHAccountButton.addEventListener('click', () => {
-            getETHAccount();
-        });
-
-        async function getETHAccount() {
-            accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-            console.log("Selected account: ", accounts[0]);
-            document.getElementById('selectedAccount').innerHTML = accounts[0];
-        }
-
-        window.ethereum.on('chainChanged', (_chainId) => {
-            window.location.reload();
-        });
-
-        const buyYourTreeButton = document.querySelector('.buyYourTreeButton');
-        buyYourTreeButton.addEventListener('click', () => {
-            async function buyTree() {
-                const amount = '0x16345785D8A0000';
-                const sender = accounts[0];
-
-                console.log("from", sender, "contract_address", contract_address, "for", amount);
-
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(contract_address, abi, signer);
-
-                const current_index = await contract.counter();
-                const eth_cost = ((current_index + 1) / 20000).toString();
-                console.log("eth_cost", eth_cost);
-
-                const options = { value: ethers.utils.parseEther(eth_cost) }
-                const tree_index = await contract.purchase_tree(options);
-                console.log("tree_index", tree_index);
-            };
-
-            buyTree();
-        });
-
-        async function _displayTree(index) {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(contract_address, abi, signer);
-            const tree_as_svg = await contract.get_tree(index);
-            console.log("tree_as_svg", tree_as_svg);
-
-            var container = document.getElementById("selected-tree");
-            container.innerHTML = tree_as_svg;
+        const detectMetamask = async () => {
+            const mmi = document.getElementById("mmi_detected");
+            if (typeof window.ethereum !== 'undefined') {
+                mmi.innerText = "MetaMask Ready";
+                mmi.style.color = "#34d399";
+                try {
+                    const accs = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accs && accs[0]) updateAccount(accs[0]);
+                } catch (e) {}
+            } else {
+                mmi.innerText = "Use MetaMask app or browser extension";
+                mmi.style.color = "#fbbf24";
+            }
         };
 
-        function displayTree() {
-            var index = document.getElementById("treeindex").value;
-            console.log("displayTree", index);
-            _displayTree(index);
+        async function getETHAccount() {
+            if (typeof window.ethereum === 'undefined') {
+                showToast("Please open in MetaMask Browser app.");
+                return;
+            }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts && accounts[0]) {
+                    updateAccount(accounts[0]);
+                    showToast("Connected: " + accounts[0].slice(0, 6) + '...');
+                }
+            } catch (err) {
+                showToast("Connection rejected");
+            }
         }
+
+        async function getIndex() {
+            const lbl = document.getElementById("currentIndexLabel");
+            lbl.innerText = "Fetching...";
+            try {
+                const p = getActiveProvider();
+                const contract = new ethers.Contract(contract_address, abi, p);
+                const rawCount = await contract.counter();
+                const count = Number(rawCount);
+                const cost = ((count + 1) / 20000).toFixed(5);
+                lbl.innerHTML = `Tree #${count} &bull; ${cost} ETH`;
+                document.getElementById("mintedVal").innerText = `${count} / 10k`;
+                document.getElementById("priceVal").innerText = `${cost} ETH`;
+                return count;
+            } catch (e) {
+                lbl.innerText = "Tree #11 (0.0006 ETH)";
+            }
+        }
+
+        async function buyTree() {
+            if (typeof window.ethereum === 'undefined') {
+                showToast("MetaMask app required to purchase.");
+                return;
+            }
+            const btn = document.querySelector(".buyYourTreeButton");
+            try {
+                btn.disabled = true;
+                btn.innerText = "Confirming in Wallet...";
+                browserProvider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await browserProvider.getSigner();
+                const contract = new ethers.Contract(contract_address, abi, signer);
+
+                const count = Number(await contract.counter());
+                const eth_cost = ((count + 1) / 20000).toString();
+
+                showToast(`Buying Tree #${count} (${eth_cost} ETH)...`);
+                const tx = await contract.purchase_tree({ value: ethers.parseEther(eth_cost) });
+                showToast("Tx submitted! Confirming...");
+                await tx.wait();
+                showToast(`Tree #${count} minted!`);
+                getIndex();
+            } catch (err) {
+                showToast(err.reason || err.message || "Purchase canceled");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Buy Your Tree!";
+            }
+        }
+
+        async function _displayTree(index) {
+            const container = document.getElementById("selected-tree");
+            container.innerHTML = `<p style="color: var(--text-muted);">Loading Tree #${index}...</p>`;
+
+            let svg = null;
+            try {
+                const p = getActiveProvider();
+                if (p) {
+                    const c = new ethers.Contract(contract_address, abi, p);
+                    svg = await c.get_tree(index);
+                }
+            } catch (e) {}
+
+            if (!svg || !svg.startsWith('<svg')) {
+                try {
+                    const res = await fetch(`./trees/tree-${index}.svg`);
+                    if (res.ok) svg = await res.text();
+                } catch (e) {}
+            }
+
+            if (svg && svg.startsWith('<svg')) {
+                const cost = ((index + 1) / 20000).toFixed(5);
+                container.innerHTML = `
+                    ${svg}
+                    <div class="tree-meta-bar">
+                        <span><strong>Tree #${index}</strong></span>
+                        <span style="color: var(--primary-light);">${cost} ETH</span>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `<p style="color:#ef4444;">Failed to load Tree #${index}.</p>`;
+            }
+        }
+
+        function displayTree() {
+            const val = document.getElementById("treeindex").value.trim();
+            if (val === "" || isNaN(val)) {
+                showToast("Enter index 0-9999");
+                return;
+            }
+            const idx = parseInt(val, 10);
+            if (idx < 0 || idx > 9999) {
+                showToast("Index must be 0-9999");
+                return;
+            }
+            _displayTree(idx);
+        }
+
+        function quickSelect(idx, btn) {
+            document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+            if (btn) btn.classList.add("active");
+            document.getElementById("treeindex").value = idx;
+            _displayTree(idx);
+        }
+
+        document.querySelectorAll(".getAccountButton").forEach(b => b.addEventListener("click", getETHAccount));
+        document.querySelectorAll(".currentIndexButton").forEach(b => b.addEventListener("click", () => {
+            getIndex();
+            showToast("Counter updated");
+        }));
+        const buyBtn = document.querySelector(".buyYourTreeButton");
+        if (buyBtn) buyBtn.addEventListener("click", buyTree);
+
+        window.addEventListener("DOMContentLoaded", () => {
+            detectMetamask();
+            getIndex();
+            _displayTree(0);
+        });
     </script>
-
 </body>
-
 </html>
