@@ -24,8 +24,8 @@
 
 <body>
     <h1>On-Chain NFT Trees</h1>
-    v 1.6
-    <a href="./mobile.htm">Click here for the mobile version</a>
+    v 2.0
+    <!-- <a href="./mobile.htm">Click here for the mobile version</a> -->
 
     <h2>The problem with NFTs</h2>
     99.9% of NFTs are pointers to an external resource. <a
@@ -221,43 +221,127 @@
             allAllTrees(8000);
         });
 
-        window.ethereum.on('chainChanged', (_chainId) => {
-            window.location.reload();
-        });
+        if (typeof window.ethereum !== 'undefined' && window.ethereum.on) {
+            window.ethereum.on('chainChanged', (_chainId) => {
+                window.location.reload();
+            });
+        }
 
-        function allAllTrees(index) {
+        let treeObserver = null;
+
+        function allAllTrees(startIndex) {
+            if (treeObserver) {
+                treeObserver.disconnect();
+                treeObserver = null;
+            }
+
+            const rangeStart = startIndex;
+            const rangeEnd = Math.min(startIndex + 2000, 10000);
+            let currentIndex = rangeStart;
+            const batchSize = 200; // 5 rows of 40 trees per batch
+            const colsPerRow = 40;
+
             const myTableDiv = document.getElementById("all-trees-table");
             myTableDiv.replaceChildren();
+
+            const statusLabel = document.createElement('div');
+            statusLabel.style.margin = '10px 0 6px';
+            statusLabel.style.fontWeight = 'bold';
+            myTableDiv.appendChild(statusLabel);
+
             const table = document.createElement('TABLE');
             table.border = '1';
 
             const tableBody = document.createElement('TBODY');
             table.appendChild(tableBody);
+            myTableDiv.appendChild(table);
 
-            for (var i = 0; i < 50; i++) {
-                var tr = document.createElement('TR');
-                tableBody.appendChild(tr);
+            const sentinel = document.createElement('div');
+            sentinel.style.padding = '10px 0';
+            sentinel.style.color = '#555';
+            myTableDiv.appendChild(sentinel);
 
-                for (var j = 0; j < 40; j++) {
-                    var td = document.createElement('TD');
-                    var tree = document.createElement("img");
-                    tree.src = './trees/tree-' + index + '.svg';
-                    console.log("Displaying tree index", index);
-                    tree.width = 24;
-                    tree.height = 24;
-                    tree.title = 'tree-' + index;
-                    td.appendChild(tree);
-                    tr.appendChild(td);
-                    index++;
+            function updateStatus() {
+                const loadedCount = currentIndex - rangeStart;
+                const totalCount = rangeEnd - rangeStart;
+                statusLabel.innerText = `Displaying trees ${rangeStart} to ${currentIndex - 1} (${loadedCount} of ${totalCount})`;
+                if (currentIndex < rangeEnd) {
+                    sentinel.innerText = 'Scroll down to load more trees...';
+                } else {
+                    sentinel.innerText = `All ${totalCount} trees loaded for this range (${rangeStart} to ${rangeEnd - 1}).`;
                 }
             }
 
-            myTableDiv.appendChild(table);
+            function loadNextBatch() {
+                if (currentIndex >= rangeEnd) {
+                    if (treeObserver) {
+                        treeObserver.disconnect();
+                        treeObserver = null;
+                    }
+                    updateStatus();
+                    return;
+                }
 
-            console.log("Number of trees", index);
+                const batchEnd = Math.min(currentIndex + batchSize, rangeEnd);
+                const fragment = document.createDocumentFragment();
+
+                while (currentIndex < batchEnd) {
+                    const tr = document.createElement('TR');
+                    for (let j = 0; j < colsPerRow && currentIndex < batchEnd; j++) {
+                        const td = document.createElement('TD');
+                        const tree = document.createElement('img');
+                        tree.src = './trees/tree-' + currentIndex + '.svg';
+                        tree.loading = 'lazy';
+                        tree.width = 24;
+                        tree.height = 24;
+                        tree.title = 'tree-' + currentIndex;
+                        td.appendChild(tree);
+                        tr.appendChild(td);
+                        currentIndex++;
+                    }
+                    fragment.appendChild(tr);
+                }
+
+                tableBody.appendChild(fragment);
+                updateStatus();
+
+                if (currentIndex >= rangeEnd && treeObserver) {
+                    treeObserver.disconnect();
+                    treeObserver = null;
+                }
+            }
+
+            // Load initial batch
+            loadNextBatch();
+
+            // Set up IntersectionObserver for progressive loading
+            if ('IntersectionObserver' in window) {
+                treeObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting && currentIndex < rangeEnd) {
+                            loadNextBatch();
+                        }
+                    });
+                }, {
+                    root: null,
+                    rootMargin: '200px',
+                    threshold: 0.1
+                });
+                treeObserver.observe(sentinel);
+            } else {
+                // Fallback button if IntersectionObserver is not supported
+                const loadMoreBtn = document.createElement('button');
+                loadMoreBtn.innerText = 'Load More';
+                loadMoreBtn.style.margin = '8px 0';
+                loadMoreBtn.onclick = () => {
+                    loadNextBatch();
+                    if (currentIndex >= rangeEnd) {
+                        loadMoreBtn.remove();
+                    }
+                };
+                sentinel.after(loadMoreBtn);
+            }
         }
-
-        // allAllTrees();
 
         const buyYourTreeButton = document.querySelector('.buyYourTreeButton');
         buyYourTreeButton.addEventListener('click', () => {
